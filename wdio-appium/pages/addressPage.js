@@ -18,7 +18,7 @@ class AddressPage extends basePage
     {
       return $("(//*[@class='android.widget.LinearLayout'])[2]")
     }
-    get btnTheame()
+    get btnTheme()
     {
       return $('//*[@text="Theme"]')
     }

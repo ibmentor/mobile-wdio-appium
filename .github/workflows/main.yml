@@ -16,5 +16,5 @@ jobs:
             pwd
             npm install
             npm rebuild
-            run: npx wdio run ./wdio.config.js --spec test\colorNote.test.js
+            wdio run ./wdio.conf.js
        

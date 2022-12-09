@@ -16,5 +16,6 @@ jobs:
             pwd
             npm install
             npm rebuild
-            wdio run ./wdio.conf.js
+            run: wdio run ./wdio.conf.js
        
+     

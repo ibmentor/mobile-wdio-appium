@@ -3,90 +3,18 @@ run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push, pull_request]
 jobs:
   Explore-GitHub-Actions:
-        runs-on: ubuntu-latest
-
-        steps:
-
+    runs-on: ubuntu-latest
+    steps:
         - name: Checkout
-
           uses: actions/checkout@v2
-
         - uses: actions/setup-node@v1
-
           with:
-
-            node-version: 16.13.0
-
-        - name: Install
-
-          run: npm install
-
+            node-version: 19.1.0
         - name: Test
-
-          run: npx wdio run ./wdio.config.js 
-
-        - uses: actions/upload-artifact@v1
-
-          if: failure()
-
-          with:
-
-            name: logs
-
-            path: logs
-
-            
-
-        - name: Get Allure history
-
-          uses: actions/checkout@v2
-
-          if: always()
-
-          continue-on-error: true
-
-          with:
-
-              ref: gh-pages
-
-              path: gh-pages
-
-
-
-
-        - name: Allure Report action from marketplace
-
-          uses: simple-elf/allure-report-action@master
-
-          if: always()
-
-        #id: allure-report
-
-          with:
-
-                 allure_results: allure-results
-
-          #gh_pages: gh-pages
-
-          #allure_report: allure-report
-
-                 allure_history: allure-history
-
-                 keep_reports: 5
-
-
-
-
-        - name: Deploy report to Github Pages
-
-          if: always()
-
-          uses: peaceiris/actions-gh-pages@v2
-
-          env:
-
-           PERSONAL_TOKEN: ${{ secrets.TOKEN }}
-
-           PUBLISH_BRANCH: gh-pages
-
-           PUBLISH_DIR: allure-history
+          run: |
+            cd ${GITHUB_WORKSPACE}/wdio-appium
+            pwd
+            npm install
+            npm rebuild
+            npx wdio run ./wdio.config.js
+       

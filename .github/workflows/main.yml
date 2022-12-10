@@ -23,7 +23,7 @@ jobs:
 
         - name: Test
 
-          run: npx wdio config/wdio.conf.bs.js 
+          run: npx wdio run ./wdio.config.js 
 
         - uses: actions/upload-artifact@v1
 

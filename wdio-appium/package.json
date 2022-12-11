@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx wdio run ./wdio.conf.js",
-    "docker": "npx wdio  config/wdio.docker.conf.js ",
+    "test": "npx wdio run ./wdio.config.js",
+    "docker": "npx wdio  config/wdio.docker.config.js ",
     "allure": "allure generate allure-results --clean && allure open"
   },
   "keywords": [],

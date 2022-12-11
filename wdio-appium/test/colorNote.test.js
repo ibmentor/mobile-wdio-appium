@@ -1,5 +1,5 @@
 import AddressPage from "../pages/addressPage";
-
+import { shoppinglistData } from "../test-data/data";
 describe('To test the functionality of colorNote application', async function() {
     beforeEach("To restore the app's homepage", async () => {
         await driver.startActivity("com.socialnmobile.dictapps.notepad.color.note", "com.socialnmobile.colornote.activity.Main")
@@ -7,7 +7,6 @@ describe('To test the functionality of colorNote application', async function() 
     });
     it('To create a new note', async () =>
     {
-        await AddressPage.skipTutorial()
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
@@ -17,7 +16,8 @@ describe('To test the functionality of colorNote application', async function() 
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
-        await AddressPage.noteHeading.addValue("Shopping List");
+        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading);
+        await expect(await AddressPage.noteHeading.getText()).toEqual("Shopping list 1");
     })
 
     it('To add items in the note body', async () => {
@@ -25,14 +25,11 @@ describe('To test the functionality of colorNote application', async function() 
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
-    
-        await AddressPage.noteHeading.addValue("Shopping List");
-    
-        await AddressPage.noteBody.addValue("Rice\Tea\Sugar");
-        await driver.pause(2000);
+        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading)
+        await AddressPage.noteBody.click()
+        await driver.sendKeys(shoppinglistData.note.list)
+        await browser.pause(4000)
         await AddressPage.saveTickBox.click();
-        await expect(AddressPage.editBtn).toBeDisplayed();
-        await expect(AddressPage.viewNote).toHaveText("Rice\Tea\Sugar");
     })
 
 
@@ -41,9 +38,10 @@ describe('To test the functionality of colorNote application', async function() 
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
-        await AddressPage.noteHeading.addValue("Shopping List");
-        await AddressPage.noteBody.addValue("Rice\Tea\Sugar");
-        await driver.pause(2000);
+        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading)
+        await AddressPage.noteBody.click()
+        await driver.sendKeys(shoppinglistData.note.list)
+        await browser.pause(4000)
         await AddressPage.saveTickBox.click();
     })
 
@@ -52,14 +50,13 @@ describe('To test the functionality of colorNote application', async function() 
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
-        await AddressPage.noteHeading.addValue("Shopping List");
-        await AddressPage.noteBody.addValue("Rice,Tea,Sugar");
+        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading);       
+        await AddressPage.noteBody.click()
+        await driver.sendKeys(shoppinglistData.note.list) 
         await AddressPage.saveNote();
         await AddressPage.noteTitle.click()
         await AddressPage.editBtn.click(); 
-        await AddressPage.noteBody.click()
-        await driver.sendKeyEvent('Enter');
-        await AddressPage.noteBody.setValue("Coffee , Milk")
+        await driver.sendKeys(shoppinglistData.note.list2)
         await driver.pause(4000);
         await AddressPage.saveNote();
         

@@ -49,9 +49,9 @@ exports.config = {
     capabilities: [{
         platformName: "Android",
         "appium:deviceName": "Pixel_3a_API_33_x86_64",
-        // 'appium:platformVersion': "13.0",
+        "appium:platformVersion": "11.0",
         "appium:automationName": "UIAutomator2",
-        "appium:app": path.join(process.cwd(), "./app-data/ApiDemos-debug.apk"),
+        "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
         "appium:autoGrantPermissions": true,
         "appium:skipDeviceInitialization": true,
         "appium:ignoreHiddenApiPolicyError": true

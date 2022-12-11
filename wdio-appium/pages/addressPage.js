@@ -71,7 +71,7 @@ class AddressPage extends basePage
       }
       get saveTickBox()
       {
-        return $("android.widget.ImageButton")
+        return $('//*[@resource-id="com.socialnmobile.dictapps.notepad.color.note:id/back_btn"]')
       }
 
       get colorBox()

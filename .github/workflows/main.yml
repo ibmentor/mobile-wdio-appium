@@ -13,8 +13,11 @@ jobs:
         - name: Test
           run: |
             cd ${GITHUB_WORKSPACE}/wdio-appium
-            pwd
             npm install
-            npm rebuild
             npx wdio run ./wdio.config.js
-       
+            
+        - uses: actions/upload-artifact@v1
+          if: failure()
+          with:
+            name: logs
+            path: logs

@@ -10,9 +10,6 @@ jobs:
         - uses: actions/setup-node@v1
           with:
             node-version: 19.1.0
-        - name: Install
-
-          run: npm install
         - name: Test
           run: |
             cd ${GITHUB_WORKSPACE}/wdio-appium

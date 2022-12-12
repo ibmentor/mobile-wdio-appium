@@ -1,0 +1,19 @@
+name: GitHub CI WDIO-Appium Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push, pull_request]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+        - uses: actions/setup-node@v1
+          with:
+            node-version: 19.1.0
+        - name: Test
+          run: |
+            cd ${GITHUB_WORKSPACE}/wdio-appium
+            npm install
+            npx wdio run ./wdio.config.js
+            
+       

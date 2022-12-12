@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npx wdio run ./wdio.conf.js --spec test.js && node index.js",
+    "test": "npx wdio run ./wdio.config.js",
     "docker": "npx wdio  config/wdio.docker.conf.js ",
     "allure": "allure generate allure-results --clean && allure open"
   },
@@ -16,7 +17,7 @@
     "@wdio/cli": "^7.20.9",
     "allure-commandline": "^2.20.1",
     "appium-doctor": "^1.16.2",
-    "appium-uiautomator2-driver": "^2.7.0",
+    "appium-uiautomator2-driver": "^2.12.0",
     "appium-uiautomator2-server": "^5.7.0",
     "dotenv": "^16.0.1",
     "find-process": "^1.4.7",

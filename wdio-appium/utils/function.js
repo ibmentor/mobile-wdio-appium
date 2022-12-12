@@ -1,10 +1,10 @@
 const fs = require("fs")
 const path = require("path")
-import createOrder from '../pages/createOrder';
-import basicDetailsPage from '../pages/basicDetailsPage';
-import { allureUtil as allure } from "../utils/util.allure"
-const { salesDoneData } = require('../data/salesDoneDetails.data');
-import decisionOrderPlatformPage from "../pages/decisionOrderPlatformPage"
+//import createOrder from '../pages/createOrder';
+//import basicDetailsPage from '../pages/basicDetailsPage';
+// import { allureUtil as allure } from "../utils/util.allure"
+// const { salesDoneData } = require('../data/salesDoneDetails.data');
+// import decisionOrderPlatformPage from "../pages/decisionOrderPlatformPage"
 export function getRandomNum(lengthOfString = 10) {
   let d = new Date()
   let n = d.getTime()

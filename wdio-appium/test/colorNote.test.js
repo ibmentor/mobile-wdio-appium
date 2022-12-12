@@ -1,0 +1,82 @@
+import AddressPage from "../pages/addressPage";
+import { shoppinglistData } from "../test-data/data";
+describe('To test the functionality of colorNote application', async function() {
+    beforeEach("To restore the app's homepage", async () => {
+        await driver.startActivity("com.socialnmobile.dictapps.notepad.color.note", "com.socialnmobile.colornote.activity.Main")
+        
+    });
+    it('To create a new note', async () =>
+    {
+        await AddressPage.addNoteTxt.click();
+        await AddressPage.textOption.click();
+        await expect(AddressPage.textEditing).toBeDisplayed();
+    })
+    it('To verify the note title ', async () => {
+        await AddressPage.skipTutorial()
+        await AddressPage.addNoteTxt.click();
+        await AddressPage.textOption.click();
+        await expect(AddressPage.textEditing).toBeDisplayed();
+        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading);
+        await expect(await AddressPage.noteHeading.getText()).toEqual("Shopping list 1");
+    })
+
+    it('To add items in the note body', async () => {
+        await AddressPage.skipTutorial()
+        await AddressPage.addNoteTxt.click();
+        await AddressPage.textOption.click();
+        await expect(AddressPage.textEditing).toBeDisplayed();
+        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading)
+        await AddressPage.noteBody.click()
+        await driver.sendKeys(shoppinglistData.note.list)
+        await browser.pause(4000)
+        await AddressPage.saveTickBox.click();
+    })
+
+
+    it('To verify the save button functionality', async () => {
+        await AddressPage.skipTutorial()
+        await AddressPage.addNoteTxt.click();
+        await AddressPage.textOption.click();
+        await expect(AddressPage.textEditing).toBeDisplayed();
+        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading)
+        await AddressPage.noteBody.click()
+        await driver.sendKeys(shoppinglistData.note.list)
+        await browser.pause(4000)
+        await AddressPage.saveTickBox.click();
+    })
+
+    it('To edit the saved note', async () => {
+        await AddressPage.skipTutorial()
+        await AddressPage.addNoteTxt.click();
+        await AddressPage.textOption.click();
+        await expect(AddressPage.textEditing).toBeDisplayed();
+        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading);       
+        await AddressPage.noteBody.click()
+        await driver.sendKeys(shoppinglistData.note.list) 
+        await AddressPage.saveNote();
+        await AddressPage.noteTitle.click()
+        await AddressPage.editBtn.click(); 
+        await driver.sendKeys(shoppinglistData.note.list2)
+        await driver.pause(4000);
+        await AddressPage.saveNote();
+        
+    })
+
+    it('To change the background color of note', async () => {
+        await AddressPage.skipTutorial()
+        await AddressPage.addNoteTxt.click();
+        await AddressPage.textOption.click();
+        await expect(AddressPage.textEditing).toBeDisplayed();
+        await AddressPage.colorBox.click();
+        await AddressPage.redcolorBox.click();
+    })
+
+    it('To change the theme of the app', async () => {
+        await AddressPage.menuOptions.click();
+        await AddressPage.btnTheame.click();
+        await AddressPage.themeBlack.click();
+        await driver.pause(10000);
+        
+    })
+
+});

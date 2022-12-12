@@ -14,8 +14,6 @@ jobs:
           run: |
             cd ${GITHUB_WORKSPACE}/wdio-appium
             npm install
-            npm install appium-uiautomator2-driver
-            appium driver list
             npx wdio run ./wdio.config.js
             
        

@@ -14,6 +14,9 @@ jobs:
           env:
             BROWSERSTACK_USER: ${{secrets.BS_USERNAME}}
             BROWSERSTACK_KEY: ${{secrets.BS_KEY}}
+            PERSONAL_TOKEN: ${{ secrets.TOKEN }}
+            PUBLISH_BRANCH: gh-pages
+            PUBLISH_DIR: wdio-appium/allure-history
           run: |
             cd ${GITHUB_WORKSPACE}/wdio-appium
             npm install

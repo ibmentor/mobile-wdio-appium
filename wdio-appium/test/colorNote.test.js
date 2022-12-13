@@ -73,7 +73,7 @@ describe('To test the functionality of colorNote application', async function() 
 
     it('To change the theme of the app', async () => {
         await AddressPage.menuOptions.click();
-        await AddressPage.btnTheame.click();
+        await AddressPage.btnTheme.click();
         await AddressPage.themeBlack.click();
         await driver.pause(10000);
         

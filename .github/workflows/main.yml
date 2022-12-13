@@ -13,8 +13,7 @@ jobs:
         - name: Test
           run: |
             cd ${GITHUB_WORKSPACE}/wdio-appium
-            pwd
             npm install
-            npm rebuild
             npx wdio run ./wdio.config.js
+            
        

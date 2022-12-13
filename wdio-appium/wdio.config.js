@@ -1,6 +1,7 @@
 const logging = process.env.DEBUG ? 'debug' : 'error';
-const path = require ('path');
-
+const path = require('path');
+import SlackReporter from '@moroo/wdio-slack-reporter';
+const allure = require('allure-commandline');
 
 exports.config = {
     //
@@ -48,7 +49,7 @@ exports.config = {
 
     capabilities: [{
         platformName: "Android",
-        "appium:deviceName": "Pixel_3a_API_33_x86_64",
+         "appium:deviceName": "Pixel_3a_API_33_x86_64",
         "appium:platformVersion": "11.0",
         "appium:automationName": "UIAutomator2",
         "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
@@ -117,7 +118,22 @@ exports.config = {
                 basePath: '/',
             },
             logPath: './'
-        }]],
+        }]
+        // ,['jira', {
+        //     jiraConfig: {
+        //         host: 'https://adec-innovations.atlassian.net/jira/core/projects/MA',
+        //         username: 'pranshu.dubey@infobeans.com',
+        //         password: 'password@123',
+        //         jiraIssue:'MA-2',
+        //         failureId: 'idNumber',
+        //         failureMessage: 'Test failed!', // Also a good place to @ a specific user / group on test failures or specify associated build numbers.
+        //         successId: 'idNumber',
+        //         successMessage: 'Test passed!',
+        //     }
+
+        // }]
+    ]
+        ,
 
 
     // Framework you want to run your specs with.
@@ -147,11 +163,44 @@ exports.config = {
         outputDir: 'allure-results',
         disableWebdriverStepsReporting: true,
         disableWebdriverScreenshotsReporting: false,
-    }]],
+    }], [SlackReporter, {
+        slackOptions: {
+            type: 'web-api',
+            channel: 'C04EF4MFGR2',
+            slackBotToken: 'xoxb-4487656495106-4485962402949-HTKc5mgpv9hLHIsA19REaCM8',
+            // Set this option to true to attach a screenshot to the failed case.
+            uploadScreenshotOfFailedCase: true,
+            // Set this option to true if you want to add thread with details of results to notification of test results posted to Slack.
+            notifyDetailResultThread: true,
+            // Set the Filter for detail results. (array is empty or undefined, all filters are applied.)
+            filterForDetailResults: [
+                'passed',
+                'failed',
+                'pending',
+                'skipped'
+            ],
+        },
+        // Set the Title of Test.
+        title: 'Slack Reporter Test',
+        // Set the notification of Test Finished
+        notifyTestFinishMessage: true,
+        // Customize Slack Emoji Symbols.
+        emojiSymbols: {
+            passed: ':white_check_mark:',
+            failed: ':x:',
+            skipped: ':double_vertical_bar:',
+            pending: ':grey_question:',
+            start: ':rocket:',
+            finished: ':checkered_flag:',
+            watch: ':stopwatch:'
+        },
+        // Override the createStartPayload function.
+    }]
+    ],
 
     mochaOpts: {
         ui: 'bdd',
-        timeout: 600000
+        timeout: 60000
     },
 
 
@@ -257,7 +306,10 @@ exports.config = {
      */
     afterTest: async function (test, context, { error, result, duration, passed, retries }) {
         if (!passed) {
-            await driver.takeScreenshot()
+            const result = await driver.takeScreenshot();
+            await result;
+            SlackReporter.uploadFailedTestScreenshot(result);
+
         }
     },
 
@@ -266,7 +318,7 @@ exports.config = {
      * Hook that gets executed after the suite has ended
      * @param {Object} suite suite details
      */
-    // afterSuite: function (suite) {
+    // afterSuite: async function (suite) {
     // },
     /**
      * Runs after a WebdriverIO command gets executed
@@ -285,6 +337,7 @@ exports.config = {
      * @param {Array.<String>} specs List of spec file paths that ran
      */
     // after: function (result, capabilities, specs) {
+
     // },
     /**
      * Gets executed right after terminating the webdriver session.
@@ -292,8 +345,26 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that ran
      */
-    // afterSession: async function (config, capabilities, specs) {
-    // },
+    afterSession: async function (config, capabilities, specs) {
+        const reportError = new Error('Could not generate Allure report')
+        const generation = allure(['generate', 'allure-results', '--clean'])
+        return new Promise((resolve, reject) => {
+            const generationTimeout = setTimeout(
+                () => reject(reportError),
+                5000)
+
+            generation.on('exit', function (exitCode) {
+                clearTimeout(generationTimeout)
+
+                if (exitCode !== 0) {
+                    return reject(reportError)
+                }
+
+                console.log('Allure report successfully generated')
+                resolve()
+            })
+        })
+    },
     /**
      * Gets executed after all workers got shut down and the process is about to exit. An error
      * thrown in the onComplete hook will result in the test run failing.
@@ -302,8 +373,10 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {<Object>} results object containing test results
      */
-    // onComplete: function(exitCode, config, capabilities, results) {
-    // },
+    // onComplete:  function () {
+
+    //     },
+
     /**
     * Gets executed when a refresh happens.
     * @param {String} oldSessionId session ID of the old session

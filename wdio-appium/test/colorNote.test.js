@@ -6,7 +6,7 @@ describe('To test the functionality of colorNote application', async function() 
         await driver.startActivity("com.socialnmobile.dictapps.notepad.color.note", "com.socialnmobile.colornote.activity.Main")
         
     });
-    it.only('To create a new note', async () =>
+    it('To create a new note', async () =>
     {
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();

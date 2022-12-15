@@ -50,7 +50,7 @@ exports.config = {
     capabilities: [{
         platformName: "Android",
          "appium:deviceName": "Pixel 6 Pro API 33",
-        "appium:platformVersion": "11.0",
+//         "appium:platformVersion": "11.0",
         "appium:automationName": "UIAutomator2",
         "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
         "appium:autoGrantPermissions": true,

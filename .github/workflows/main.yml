@@ -55,6 +55,8 @@ jobs:
                 PUBLISH_BRANCH: gh-pages
                 PUBLISH_DIR: wdio-appium/allure-history
                 
+                
+                
         
           
             

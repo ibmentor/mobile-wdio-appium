@@ -11,9 +11,56 @@ jobs:
           with:
             node-version: 19.1.0
         - name: Test
+          env:
+            BROWSERSTACK_USER: ${{secrets.BS_USERNAME}}
+            BROWSERSTACK_KEY: ${{secrets.BS_KEY}}
+            
           run: |
             cd ${GITHUB_WORKSPACE}/wdio-appium
             npm install
-            npx wdio run ./wdio.config.js
+            npm rebuild
+            npx wdio run ./wdio.bs.conf.js 
+        
+        - uses: actions/upload-artifact@v2
+          if: failure()
+          with:
+            name: gh-pages
+            path: gh-pages
+      
+        - name: Get Allure history
+          uses: actions/checkout@v2
+          if: always()
+          
+          continue-on-error: true
+          with:
+              ref: gh-pages
+              path: gh-pages
+       
+        - name: Allure Report action from marketplace
+          uses: simple-elf/allure-report-action@master
+          if: always()
+          #id: allure-report
+          with:
+                 allure_results: wdio-appium/allure-results/
+                 allure_history: wdio-appium/allure-history
+                 keep_reports: 5
+      
+    
+          
+        - name: Deploy report to Github Pages
+          if: always()
+          uses: peaceiris/actions-gh-pages@v2
+          env:
+                PERSONAL_TOKEN: ${{ secrets.TOKEN }}
+                PUBLISH_BRANCH: gh-pages
+                PUBLISH_DIR: wdio-appium/allure-history
+                
+                
+                
+                
+        
+          
             
+       
+
        

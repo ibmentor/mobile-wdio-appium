@@ -1,17 +1,16 @@
 const logging = process.env.DEBUG ? 'debug' : 'error';
-const path = require('path');
-const fs = require("fs")
-import slackReporter from '../wdio-appium/utils/util.slackRepoting';
-const allure = require('allure-commandline');
-import { deleteFolder } from '../wdio-appium/utils/function'
-
+const path = require ('path');
+import dotenv from 'dotenv'
+dotenv.config()
 
 exports.config = {
     //
     // ====================
-    // Runner Configuration
+    // BrowserStack Credentials
     // ====================
     //
+    user : process.env.BROWSERSTACK_USER,
+    key : process.env.BROWSERSTACK_KEY,
 
     //
 
@@ -52,10 +51,10 @@ exports.config = {
 
     capabilities: [{
         platformName: "Android",
-         "appium:deviceName": "Pixel 6 Pro API 33",
-//         "appium:platformVersion": "11.0",
+        "appium:deviceName": "Google Pixel 6 Pro",
+         "appium:platformVersion": "12.0",
         "appium:automationName": "UIAutomator2",
-        "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
+        "appium:app": "bs://ee5668d3609922308cf49b0d5b901b73e1e39d94",
         "appium:autoGrantPermissions": true,
         "appium:skipDeviceInitialization": true,
         "appium:ignoreHiddenApiPolicyError": true
@@ -113,31 +112,13 @@ exports.config = {
     // Default request retries count
     connectionRetryCount: 3,
     //
+    services : ['browserstack'],
+
     services: [
-        ['appium', {
-            args: {
-                address: 'localhost',
-                port: 4723,
-                basePath: '/',
-            },
-            logPath: './'
-        }]
-        // ,['jira', {
-        //     jiraConfig: {
-        //         host: 'https://adec-innovations.atlassian.net/jira/core/projects/MA',
-        //         username: 'pranshu.dubey@infobeans.com',
-        //         password: 'password@123',
-        //         jiraIssue:'MA-2',
-        //         failureId: 'idNumber',
-        //         failureMessage: 'Test failed!', // Also a good place to @ a specific user / group on test failures or specify associated build numbers.
-        //         successId: 'idNumber',
-        //         successMessage: 'Test passed!',
-        //     }
-
-        // }]
+        ['browserstack', 
+        //{   browserstackLocal: true}
     ]
-    ,
-
+    ],
 
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -166,50 +147,11 @@ exports.config = {
         outputDir: 'allure-results',
         disableWebdriverStepsReporting: true,
         disableWebdriverScreenshotsReporting: false,
-    }], ['json', {
-        outputDir: './Results',
-        outputFileFormat: function (opts) {
-            return `results-${opts.cid}.${opts.capabilities}.json`
-        }
-    }]
-        // [SlackReporter, {
-        //     slackOptions: {
-        //         type: 'web-api',
-        //         channel: 'C04EF4MFGR2',
-        //         slackBotToken: 'xoxb-4487656495106-4485962402949-HTKc5mgpv9hLHIsA19REaCM8',
-        //         // Set this option to true to attach a screenshot to the failed case.
-        //         uploadScreenshotOfFailedCase: true,
-        //         // Set this option to true if you want to add thread with details of results to notification of test results posted to Slack.
-        //         notifyDetailResultThread: true,
-        //         // Set the Filter for detail results. (array is empty or undefined, all filters are applied.)
-        //         filterForDetailResults: [
-        //             'passed',
-        //             'failed',
-        //             'pending',
-        //             'skipped'
-        //         ],
-        // },
-        // // Set the Title of Test.
-        // title: 'Slack Reporter Test',
-        // // Set the notification of Test Finished
-        // notifyTestFinishMessage: true,
-        // // Customize Slack Emoji Symbols.
-        // emojiSymbols: {
-        //     passed: ':white_check_mark:',
-        //     failed: ':x:',
-        //     skipped: ':double_vertical_bar:',
-        //     pending: ':grey_question:',
-        //     start: ':rocket:',
-        //     finished: ':checkered_flag:',
-        //     watch: ':stopwatch:'
-        // },
-        // // Override the createStartPayload function.
-        // }]
-    ],
+    }]],
 
     mochaOpts: {
         ui: 'bdd',
-        timeout: 60000
+        timeout: 600000
     },
 
 
@@ -315,8 +257,7 @@ exports.config = {
      */
     afterTest: async function (test, context, { error, result, duration, passed, retries }) {
         if (!passed) {
-            await driver.takeScreenshot();
-
+            await driver.takeScreenshot()
         }
     },
 
@@ -325,7 +266,7 @@ exports.config = {
      * Hook that gets executed after the suite has ended
      * @param {Object} suite suite details
      */
-    // afterSuite: async function (suite) {
+    // afterSuite: function (suite) {
     // },
     /**
      * Runs after a WebdriverIO command gets executed
@@ -344,7 +285,6 @@ exports.config = {
      * @param {Array.<String>} specs List of spec file paths that ran
      */
     // after: function (result, capabilities, specs) {
-
     // },
     /**
      * Gets executed right after terminating the webdriver session.
@@ -352,26 +292,8 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that ran
      */
-    afterSession: async function (config, capabilities, specs) {
-        // const reportError = new Error('Could not generate Allure report')
-        // const generation = allure(['generate', 'allure-results', '--clean'])
-        // return new Promise((resolve, reject) => {
-        //     const generationTimeout = setTimeout(
-        //         () => reject(reportError),
-        //         5000)
-
-        //     generation.on('exit', function (exitCode) {
-        //         clearTimeout(generationTimeout)
-
-        //         if (exitCode !== 0) {
-        //             return reject(reportError)
-        //         }
-
-        //         console.log('Allure report successfully generated')
-        //         resolve()
-        //     })
-        // })
-    },
+    // afterSession: async function (config, capabilities, specs) {
+    // },
     /**
      * Gets executed after all workers got shut down and the process is about to exit. An error
      * thrown in the onComplete hook will result in the test run failing.
@@ -380,37 +302,8 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {<Object>} results object containing test results
      */
-    onComplete: async function () {
-        const dir = path.join(process.cwd(), 'Results');
-        let finalContent = { "state": {} };
-        const read_directory = async dir =>
-            fs.readdirSync(dir).reduce((finalContent, file) => {
-                const filePath = path.join(dir, file);
-                console.log(filePath);
-                let content = require(filePath);
-                finalContent.state.passed += content.state.passed;
-                finalContent.state.failed += content.state.failed;
-                finalContent.state.skipped += content.state.skipped;
-                // finalContent.state = Object.assign({}, finalContent.state, content.state);
-                return finalContent;
-            }, { "state": { passed: 0, failed: 0, skipped: 0 } });
-
-
-        read_directory(dir).then(data => {
-            fs.writeFileSync('./FinalJsonReport/result.json', JSON.stringify(data));
-        });
-        const result = path.join(process.cwd(), './FinalJsonReport/result.json');
-        const resultsData = require(result);
-        console.log(resultsData);
-        let passedTests = resultsData.state.passed
-        let failedTests = resultsData.state.failed
-        let totalTests = passedTests + failedTests
-        const postMsg = `Number of Tests: ${totalTests}\nPassed: ${passedTests}; Failed: ${failedTests};`;
-        console.log("#####################" + postMsg)
-        await slackReporter.sendPreMessage(postMsg);
-        // await deleteFolder();
-    },
-
+    // onComplete: function(exitCode, config, capabilities, results) {
+    // },
     /**
     * Gets executed when a refresh happens.
     * @param {String} oldSessionId session ID of the old session

@@ -1,5 +1,10 @@
 const fs = require("fs")
 const path = require("path")
+const csv = require('csvtojson');
+var xlsx = require('node-xlsx');
+const excelToJson = require('convert-excel-to-json');
+
+
 //import createOrder from '../pages/createOrder';
 //import basicDetailsPage from '../pages/basicDetailsPage';
 // import { allureUtil as allure } from "../utils/util.allure"
@@ -15,105 +20,9 @@ export function getRandomNum(lengthOfString = 10) {
   return n
 }
 
-export async function salesDetails() {
-
-  allure.startStep("Maximizing the window")
-  await browser.maximizeWindow()
-  allure.startStep("Opening KART Url")
-  await createOrder.openByjusOrderPage()
-  allure.startStep("Clicking on Punch order button")
-  await createOrder.punchNewOrder()
-  await basicDetailsPage.fillCustomerDetails(
-      salesDoneData,
-      process.env.USER_EMAIL_SANJAY
-  )
-  
-}
-
-export async function salesDetailsWithPgQueryYes() {
-
-  allure.startStep("Maximizing the window")
-  await browser.maximizeWindow()
-  allure.startStep("Opening KART Url")
-  await createOrder.openByjusOrderPagewithPgQueryYes()
-  allure.startStep("Clicking on Punch order button")
-  await createOrder.punchNewOrder()
-  await basicDetailsPage.fillCustomerDetails(
-      salesDoneData,
-      process.env.USER_EMAIL_SANJAY
-  )
-  
-}
-
-export function getValidityYear(validity) {
-  let currentYear = new Date().getFullYear()
-  let validityYear = parseInt(currentYear) + parseInt(validity)
-  console.log(validityYear)
-  if (validityYear <= currentYear + 15) {
-    return validityYear
-  } else {
-    return currentYear + 1
-  }
-}
 export async function waitAndDoClick(element) {
   await element.waitForExist({ timeout: 80000 })
   await element.click()
-}
-export async function typeAndEnter(text) {
-  await browser.keys(text)
-  await browser.keys("\uE007")
-}
-
-export async function skuValidation(skulist) {
-  const nameSkuNames = []
-  for (const sku of skulist.split("\n")) {
-    nameSkuNames.push(sku.split(":")[0].trim())
-  }
-  return nameSkuNames
-}
-export async function priceValidationWithBasePrice(
-  basePrice,
-  continuousPrice,
-  tabletPrice,
-  differenceinClasses
-) {
-  let UpgradedContinuousPrice =
-    Number(differenceinClasses) * Number(continuousPrice)
-  let standardPrice = Number(basePrice) + Number(UpgradedContinuousPrice)
-  let maximumCost = Number(standardPrice) + Number(tabletPrice)
-  let minimumCost =
-    Math.floor((Number(standardPrice) * 0.8) / 1000) * 1000 +
-    Number(tabletPrice)
-  console.log(maximumCost, minimumCost)
-  return { maximumCost, minimumCost }
-}
-
-export async function priceValidationWithBaseContSDPrice(
-  basePrice,
-  continuousPrice,
-  SdCardPrice,
-  tabletPrice
-) {
-  let standardPrice = Number(basePrice) + Number(continuousPrice + SdCardPrice)
-  let maximumCost = Number(standardPrice) + Number(tabletPrice)
-  let minimumCost =
-    Math.floor((Number(standardPrice) * 0.8) / 1000) * 1000 +
-    Number(tabletPrice)
-  console.log(maximumCost, minimumCost)
-  return { maximumCost, minimumCost }
-}
-
-export async function priceValidationWithMaxPriceOnly(
-  maxCost,
-  uIMinimumCost,
-  uIMaximumCost
-) {
-  let maximumPrice = maxCost
-  let minimumPrice = Number(maximumPrice) * 0.8
-  await expect(uIMinimumCost).toEqual(minimumPrice)
-  console.log("Minimum cost is matching")
-  await expect(uIMaximumCost).toEqual(maximumPrice)
-  console.log("Maximum cost is matching")
 }
 
 export async function waitForDisplayedAndClickable(element) {
@@ -121,90 +30,48 @@ export async function waitForDisplayedAndClickable(element) {
   await element.waitForClickable({ timeout: 30000 })
 }
 
-export async function getWindowHandles() {
-  const handles = await browser.getWindowHandles()
-  if (handles.length >= 3) {
-    await browser.closeWindow()
-    await browser.switchToWindow(handles[0])
-    await browser.closeWindow()
-    await browser.switchToWindow(handles[1])
-  } else if ((handles.length = 2)) {
-    await browser.closeWindow()
-    await browser.switchToWindow(handles[0])
-  }
-}
-export async function convertsAllArraystoJSONObject(draftOrderIdArr) {
-  var result = []
-  result.push({
-    draftOrderId: draftOrderIdArr,
-  })
+export async function readDataFromExcel() {
+  const filePath = path.join(process.cwd(), './test-data/testData.xlsx');
 
-  return result
+  const result = excelToJson({
+
+    source: fs.readFileSync(filePath), // fs.readFileSync return a Buffer
+    header: {
+      // Is the number of rows that will be skipped and will not be present at our result object. Counting from top to bottom
+      rows: 1 // 2, 3, 4, etc.
+    }
+  });
+  return result;
 }
 
-export async function updateJsonValueForAvanse(newAppId) {
-  const fileName = path.join(process.cwd(), "data/emiPaymentDetails.json")
-  const file = require(fileName)
-  file.avanseAappId = newAppId
-  fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
-    if (err) return console.log(err)
-    console.log(JSON.stringify(file))
-    console.log("writing to " + fileName)
-  })
-}
-export async function updateJsonValue(newRefId, pathOfJson) {
-  console.log("pathOfJson: " + pathOfJson)
-  const fileName = path.join(process.cwd(), pathOfJson)
-  const file = require(fileName)
-  file.paymentRefId = newRefId
+export async function readDataFromCsv(skuId) {
+  const filePath = path.join(process.cwd(), './test-data/testdata.csv');
+  const testData = await csv().fromFile(filePath);
+  const heading = testData[0].heading
+  const firstList = [testData[0].list, testData[1].list, testData[2].list]
+  const secondList = [testData[0].list2, testData[1].list2, testData[2].list2]
 
-  fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
-    if (err) return console.log(err)
-    console.log(JSON.stringify(file))
-    console.log("writing to " + fileName)
-  })
+  return { heading, firstList, secondList };
 }
-  export async function skuVerification(actualSkus, expectedSkus) {
-    console.log("**function***********" + expectedSkus)
-    for (let i = 0; i < actualSkus.length; i++) {
-      console.log("sku number " + i + "= " + actualSkus[i])
-      expectedSkus.includes(actualSkus[i])
-      if (expectedSkus.indexOf(actualSkus[i]) > -1) {
-        console.log("Sku is validated")
-      } else {
-        console.log("Sku is not matching")
-        console.log("This sku :" + actualSkus[i] + "is not matching")
-        expect("Sku's didn't matched").toEqual("Sku's matched")
+
+export async function deleteFolder() {
+  const folderPath = path.join(process.cwd(), './Results/');
+  const filename = path.join(process.cwd(), './FinalJsonReport/');
+  const folders = [filename, folderPath];
+
+  for (let i = 0; i <= 1; i++) {
+
+    fs.readdir(folders[i], (err, files) => {
+      if (err) throw err;
+
+      for (const file of files) {
+        console.log(file + ' : Folder is Deleted Successfully.');
+        fs.unlinkSync(folders[i] + file);
       }
     }
-  
-}
-export async function pushDraftOrderToCsv(draftOrderId){
-
-  var result = await convertsAllArraystoJSONObject(draftOrderId);
-  await decisionOrderPlatformPage.updateDraftOrderIdInCsvFile(result);
-}
-
-export async function pushSpecCombinationToCsv(combinationDetails){
-
-  var result = await convertsAllArraystoJSONObject(combinationDetails);
-  await decisionOrderPlatformPage.updateScriptCombinationDetailsInCsv(result);
-}
-
-export async function sumArray(array) {
-  let sum = 0;
-  for (let i = 0; i < array.length; i += 1) {
-      sum += array[i];
+    );
   }
-  return sum;
+
 }
 
-export async function duplicate(array, duplicator) {
-  var buildArray = [];
-  for (let i = 0; i < array.length; i++) {
-      for (let j = 0; j < duplicator; j++) {
-          buildArray.push(array[i]);
-      }
-  }
-  return buildArray;
-}
+

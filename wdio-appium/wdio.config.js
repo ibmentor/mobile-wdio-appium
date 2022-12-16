@@ -1,7 +1,10 @@
 const logging = process.env.DEBUG ? 'debug' : 'error';
 const path = require('path');
-import SlackReporter from '@moroo/wdio-slack-reporter';
+const fs = require("fs")
+import slackReporter from '../wdio-appium/utils/util.slackRepoting';
 const allure = require('allure-commandline');
+import { deleteFolder } from '../wdio-appium/utils/function'
+
 
 exports.config = {
     //
@@ -133,7 +136,7 @@ exports.config = {
 
         // }]
     ]
-        ,
+    ,
 
 
     // Framework you want to run your specs with.
@@ -163,39 +166,45 @@ exports.config = {
         outputDir: 'allure-results',
         disableWebdriverStepsReporting: true,
         disableWebdriverScreenshotsReporting: false,
-    }], [SlackReporter, {
-        slackOptions: {
-            type: 'web-api',
-            channel: 'C04EF4MFGR2',
-            slackBotToken: 'xoxb-4487656495106-4485962402949-HTKc5mgpv9hLHIsA19REaCM8',
-            // Set this option to true to attach a screenshot to the failed case.
-            uploadScreenshotOfFailedCase: true,
-            // Set this option to true if you want to add thread with details of results to notification of test results posted to Slack.
-            notifyDetailResultThread: true,
-            // Set the Filter for detail results. (array is empty or undefined, all filters are applied.)
-            filterForDetailResults: [
-                'passed',
-                'failed',
-                'pending',
-                'skipped'
-            ],
-        },
-        // Set the Title of Test.
-        title: 'Slack Reporter Test',
-        // Set the notification of Test Finished
-        notifyTestFinishMessage: true,
-        // Customize Slack Emoji Symbols.
-        emojiSymbols: {
-            passed: ':white_check_mark:',
-            failed: ':x:',
-            skipped: ':double_vertical_bar:',
-            pending: ':grey_question:',
-            start: ':rocket:',
-            finished: ':checkered_flag:',
-            watch: ':stopwatch:'
-        },
-        // Override the createStartPayload function.
+    }], ['json', {
+        outputDir: './Results',
+        outputFileFormat: function (opts) {
+            return `results-${opts.cid}.${opts.capabilities}.json`
+        }
     }]
+        // [SlackReporter, {
+        //     slackOptions: {
+        //         type: 'web-api',
+        //         channel: 'C04EF4MFGR2',
+        //         slackBotToken: 'xoxb-4487656495106-4485962402949-HTKc5mgpv9hLHIsA19REaCM8',
+        //         // Set this option to true to attach a screenshot to the failed case.
+        //         uploadScreenshotOfFailedCase: true,
+        //         // Set this option to true if you want to add thread with details of results to notification of test results posted to Slack.
+        //         notifyDetailResultThread: true,
+        //         // Set the Filter for detail results. (array is empty or undefined, all filters are applied.)
+        //         filterForDetailResults: [
+        //             'passed',
+        //             'failed',
+        //             'pending',
+        //             'skipped'
+        //         ],
+        // },
+        // // Set the Title of Test.
+        // title: 'Slack Reporter Test',
+        // // Set the notification of Test Finished
+        // notifyTestFinishMessage: true,
+        // // Customize Slack Emoji Symbols.
+        // emojiSymbols: {
+        //     passed: ':white_check_mark:',
+        //     failed: ':x:',
+        //     skipped: ':double_vertical_bar:',
+        //     pending: ':grey_question:',
+        //     start: ':rocket:',
+        //     finished: ':checkered_flag:',
+        //     watch: ':stopwatch:'
+        // },
+        // // Override the createStartPayload function.
+        // }]
     ],
 
     mochaOpts: {
@@ -306,9 +315,7 @@ exports.config = {
      */
     afterTest: async function (test, context, { error, result, duration, passed, retries }) {
         if (!passed) {
-            const result = await driver.takeScreenshot();
-            await result;
-            SlackReporter.uploadFailedTestScreenshot(result);
+            await driver.takeScreenshot();
 
         }
     },
@@ -346,24 +353,24 @@ exports.config = {
      * @param {Array.<String>} specs List of spec file paths that ran
      */
     afterSession: async function (config, capabilities, specs) {
-        const reportError = new Error('Could not generate Allure report')
-        const generation = allure(['generate', 'allure-results', '--clean'])
-        return new Promise((resolve, reject) => {
-            const generationTimeout = setTimeout(
-                () => reject(reportError),
-                5000)
+        // const reportError = new Error('Could not generate Allure report')
+        // const generation = allure(['generate', 'allure-results', '--clean'])
+        // return new Promise((resolve, reject) => {
+        //     const generationTimeout = setTimeout(
+        //         () => reject(reportError),
+        //         5000)
 
-            generation.on('exit', function (exitCode) {
-                clearTimeout(generationTimeout)
+        //     generation.on('exit', function (exitCode) {
+        //         clearTimeout(generationTimeout)
 
-                if (exitCode !== 0) {
-                    return reject(reportError)
-                }
+        //         if (exitCode !== 0) {
+        //             return reject(reportError)
+        //         }
 
-                console.log('Allure report successfully generated')
-                resolve()
-            })
-        })
+        //         console.log('Allure report successfully generated')
+        //         resolve()
+        //     })
+        // })
     },
     /**
      * Gets executed after all workers got shut down and the process is about to exit. An error
@@ -373,9 +380,36 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {<Object>} results object containing test results
      */
-    // onComplete:  function () {
+    onComplete: async function () {
+        const dir = path.join(process.cwd(), 'Results');
+        let finalContent = { "state": {} };
+        const read_directory = async dir =>
+            fs.readdirSync(dir).reduce((finalContent, file) => {
+                const filePath = path.join(dir, file);
+                console.log(filePath);
+                let content = require(filePath);
+                finalContent.state.passed += content.state.passed;
+                finalContent.state.failed += content.state.failed;
+                finalContent.state.skipped += content.state.skipped;
+                // finalContent.state = Object.assign({}, finalContent.state, content.state);
+                return finalContent;
+            }, { "state": { passed: 0, failed: 0, skipped: 0 } });
 
-    //     },
+
+        read_directory(dir).then(data => {
+            fs.writeFileSync('./FinalJsonReport/result.json', JSON.stringify(data));
+        });
+        const result = path.join(process.cwd(), './FinalJsonReport/result.json');
+        const resultsData = require(result);
+        console.log(resultsData);
+        let passedTests = resultsData.state.passed
+        let failedTests = resultsData.state.failed
+        let totalTests = passedTests + failedTests
+        const postMsg = `Number of Tests: ${totalTests}\nPassed: ${passedTests}; Failed: ${failedTests};`;
+        console.log("#####################" + postMsg)
+        await slackReporter.sendPreMessage(postMsg);
+        // await deleteFolder();
+    },
 
     /**
     * Gets executed when a refresh happens.

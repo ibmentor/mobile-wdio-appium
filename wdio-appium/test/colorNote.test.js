@@ -1,13 +1,13 @@
 import AddressPage from "../pages/addressPage";
 import { shoppinglistData } from "../test-data/data";
+import { readDataFromCsv } from '../utils/function';
 describe('To test the functionality of colorNote application', async function() {
     this.retries(1)
     beforeEach("To restore the app's homepage", async () => {
         await driver.startActivity("com.socialnmobile.dictapps.notepad.color.note", "com.socialnmobile.colornote.activity.Main")
-        
+
     });
-    it('To create a new note', async () =>
-    {
+    it('To create a new note', async () => {
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
@@ -17,7 +17,8 @@ describe('To test the functionality of colorNote application', async function() 
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
-        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading);
+        const testData = await readDataFromCsv();
+        await AddressPage.noteHeading.setValue(testData.heading);
         await expect(await AddressPage.noteHeading.getText()).toEqual("Shopping list 1");
     })
 
@@ -26,9 +27,10 @@ describe('To test the functionality of colorNote application', async function() 
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
-        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading)
+        const testData = await readDataFromCsv();
+        await AddressPage.noteHeading.setValue(testData.heading)
         await AddressPage.noteBody.click()
-        await driver.sendKeys(shoppinglistData.note.list)
+        await driver.sendKeys(testData.firstList)
         await browser.pause(4000)
         await AddressPage.saveTickBox.click();
     })
@@ -39,9 +41,10 @@ describe('To test the functionality of colorNote application', async function() 
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
-        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading)
+        const testData = await readDataFromCsv();
+        await AddressPage.noteHeading.setValue(testData.heading)
         await AddressPage.noteBody.click()
-        await driver.sendKeys(shoppinglistData.note.list)
+        await driver.sendKeys(testData.firstList)
         await browser.pause(4000)
         await AddressPage.saveTickBox.click();
     })
@@ -51,16 +54,17 @@ describe('To test the functionality of colorNote application', async function() 
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();
         await expect(AddressPage.textEditing).toBeDisplayed();
-        await AddressPage.noteHeading.setValue(shoppinglistData.note.heading);       
+        const testData = await readDataFromCsv();
+        await AddressPage.noteHeading.setValue(testData.heading);
         await AddressPage.noteBody.click()
-        await driver.sendKeys(shoppinglistData.note.list) 
+        await driver.sendKeys(testData.firstList)
         await AddressPage.saveNote();
         await AddressPage.noteTitle.click()
-        await AddressPage.editBtn.click(); 
-        await driver.sendKeys(shoppinglistData.note.list2)
+        await AddressPage.editBtn.click();
+        await driver.sendKeys(testData.secondList)
         await driver.pause(4000);
         await AddressPage.saveNote();
-        
+
     })
 
 });

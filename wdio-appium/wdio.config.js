@@ -4,6 +4,8 @@ const fs = require("fs")
 import slackReporter from '../wdio-appium/utils/util.slackRepoting';
 const allure = require('allure-commandline');
 import { deleteFolder } from '../wdio-appium/utils/function'
+import JiraApi from 'jira-client';
+import jira from './test/jira';
 
 
 exports.config = {
@@ -48,23 +50,50 @@ exports.config = {
     // and 30 processes will get spawned. The property handles how many capabilities
     // from the same test should run tests.
     //
-    maxInstances: 1,
+    maxInstances: 2,
 
-    capabilities: [{
-        platformName: "Android",
-         "appium:deviceName": "Pixel 6 Pro API 33",
-//         "appium:platformVersion": "11.0",
-        "appium:automationName": "UIAutomator2",
-        "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
-        "appium:autoGrantPermissions": true,
-        "appium:skipDeviceInitialization": true,
-        "appium:ignoreHiddenApiPolicyError": true
-        // "appium:noReset": false,
-        // "appium:avd": "Pixel5",
-        // "appium:disableSuppressAccessibilityService": true,
-        // "appium:newCommandTimeout": "120",
-        // acceptInsecureCerts: true
-    }],
+    capabilities: [
+//     { "appium:systemPort": "8203",
+//         platformName: "Android",
+//          "appium:deviceName": "Pixel 6 Pro API 33",
+// //         "appium:platformVersion": "11.0",
+//         "appium:automationName": "UIAutomator2",
+//         "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
+//         "appium:autoGrantPermissions": true,
+//         "appium:skipDeviceInitialization": true,
+//         "appium:ignoreHiddenApiPolicyError": true,
+//         "appium:uiautomator2ServerLaunchTimeout":"10000",
+//         "appium:uiautomator2ServerInstallTimeout":"10000"
+//     }, 
+    {
+    "appium:systemPort": "8203",
+    platformName: "Android",
+    "appium:udid":"emulator-5554", //for parallel execution device UUID is mandatory
+    "appium:platformVersion": "11.0",
+    "appium:automationName": "UIAutomator2",
+    "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
+    "appium:autoGrantPermissions": true,
+    "appium:skipDeviceInitialization": true,
+    "appium:ignoreHiddenApiPolicyError": true,
+    "appium:uiautomator2ServerLaunchTimeout":"10000",
+    "appium:uiautomator2ServerInstallTimeout":"10000"
+    
+}, 
+// {
+    
+//     "appium:systemPort": "8201",
+//      platformName: "Android",
+//     "appium:udid":"emulator-5556",
+//     "appium:platformVersion": "11.0",
+//     "appium:automationName": "UIAutomator2",
+//     "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
+//     "appium:autoGrantPermissions": true,
+//     "appium:skipDeviceInitialization": true,
+//     "appium:ignoreHiddenApiPolicyError": true,
+//     "appium:uiautomator2ServerLaunchTimeout":"10000",
+//     "appium:uiautomator2ServerInstallTimeout":"10000"
+// }
+],
     //
     // If you have trouble getting all important capabilities together, check out the
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -122,19 +151,6 @@ exports.config = {
             },
             logPath: './'
         }]
-        // ,['jira', {
-        //     jiraConfig: {
-        //         host: 'https://adec-innovations.atlassian.net/jira/core/projects/MA',
-        //         username: 'pranshu.dubey@infobeans.com',
-        //         password: 'password@123',
-        //         jiraIssue:'MA-2',
-        //         failureId: 'idNumber',
-        //         failureMessage: 'Test failed!', // Also a good place to @ a specific user / group on test failures or specify associated build numbers.
-        //         successId: 'idNumber',
-        //         successMessage: 'Test passed!',
-        //     }
-
-        // }]
     ]
     ,
 

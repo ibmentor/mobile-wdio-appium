@@ -26,7 +26,18 @@ jobs:
           with:
             name: gh-pages
             path: gh-pages
-      
+        
+        - name: Slack Notification
+          uses: rtCamp/action-slack-notify@v2
+          with:
+             status: ${{ job.status}}
+             steps: ${{ toJson(steps) }}
+             channel: '#mobile-automation'
+          if: always()
+          env:
+              SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+              
+              
         - name: Get Allure history
           uses: actions/checkout@v2
           if: always()
@@ -55,15 +66,7 @@ jobs:
                 PUBLISH_BRANCH: gh-pages
                 PUBLISH_DIR: wdio-appium/allure-history
                 
-        - name: Slack Notification
-          uses: rtCamp/action-slack-notify@v2
-          with:
-             status: ${{ job.status}}
-             steps: ${{ toJson(steps) }}
-             channel: '#mobile-automation'
-          if: always()
-          env:
-              SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+       
                 
                 
                 

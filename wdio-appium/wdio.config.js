@@ -5,7 +5,6 @@ import slackReporter from '../wdio-appium/utils/util.slackRepoting';
 const allure = require('allure-commandline');
 import { deleteFolder } from '../wdio-appium/utils/function'
 import JiraApi from 'jira-client';
-import jira from './test/jira';
 
 
 exports.config = {

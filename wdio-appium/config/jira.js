@@ -8,7 +8,7 @@ class Jira{
             protocol : 'https',
             host : 'appium-wdio.atlassian.net/',
             username: 'parv.khanna@infobeans.com',
-            password: 'HHWT3W9i9sgWAT7R2DZMF9D5',
+            password: 'DJRfPCgvBxIbwSCRTCk3423D',
             apiVersion:'2',
             strictSSL: true,
             });
@@ -21,7 +21,7 @@ class Jira{
                     {"key":"AWD"},
                 
                 "issuetype":{"name":"Bug"},
-                "summary":"Appium-wdio-DEMO101",
+                "summary":"Broken at point 101",
                 "description":"test101"
                 },
             }

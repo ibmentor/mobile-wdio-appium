@@ -112,7 +112,6 @@ exports.config = {
     // Default request retries count
     connectionRetryCount: 3,
     //
-    services : ['browserstack'],
 
     services: [
         ['browserstack', 

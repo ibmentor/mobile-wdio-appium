@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Notify slack pr open
+      uses: kv109/action-ready-for-review@0.1
       env: 
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         uses: rtCamp/action-slack-notify@v2

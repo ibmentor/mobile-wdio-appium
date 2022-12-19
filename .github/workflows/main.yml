@@ -1,6 +1,6 @@
 name: GitHub CI WDIO-Appium Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [ pull_request]
+on: [pull_request]
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -27,13 +27,13 @@ jobs:
             name: gh-pages
             path: gh-pages
         
-        - name: Slack Notification
+        - name: Slack Notification on Build Sucess
           uses: rtCamp/action-slack-notify@v2
           with:
              status: ${{ job.status}}
              steps: ${{ toJson(steps) }}
              channel: '#mobile-automation'
-          if: always()
+          if: sucess()
           env:
               SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
               

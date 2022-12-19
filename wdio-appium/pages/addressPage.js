@@ -1,4 +1,3 @@
-
 import basePage from "./basePage"
 
 class AddressPage extends basePage 
@@ -7,6 +6,15 @@ class AddressPage extends basePage
     get menuOptions()
     {
       return $('//*[@resource-id="com.socialnmobile.dictapps.notepad.color.note:id/icon_nav"]');
+    }
+    get btnsettings()
+    {
+      return $("//*[@text='Settings']")
+    }
+
+    get btnAbout()
+    {
+      return $("//*[@text='About']")
     }
     get btnSkip()
     {

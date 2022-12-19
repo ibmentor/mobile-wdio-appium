@@ -8,7 +8,7 @@ class Jira{
             protocol : 'https',
             host : 'appium-wdio.atlassian.net/',
             username: 'parv.khanna@infobeans.com',
-            password: '3RsD4uYRs1bFnxwQmUod0C95',
+            password: 'HHWT3W9i9sgWAT7R2DZMF9D5',
             apiVersion:'2',
             strictSSL: true,
             });

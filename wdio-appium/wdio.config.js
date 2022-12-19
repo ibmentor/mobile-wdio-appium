@@ -4,8 +4,7 @@ const fs = require("fs")
 import slackReporter from '../wdio-appium/utils/util.slackRepoting';
 const allure = require('allure-commandline');
 import { deleteFolder } from '../wdio-appium/utils/function'
-import JiraApi from 'jira-client';
-import jira from './test/jira';
+import jira from './config/jira';
 
 
 exports.config = {
@@ -331,6 +330,7 @@ exports.config = {
      */
     afterTest: async function (test, context, { error, result, duration, passed, retries }) {
         if (!passed) {
+            await jira.raiseIssue()
             await driver.takeScreenshot();
 
         }

@@ -14,7 +14,7 @@ var mail = nodemailer.createTransport({
 var mailOptions = {
 
   from: 'vy493046@gmail.com',
-  to: 'pranshud1395@gmail.com',
+  to: 'parvkhanna10@gmail.com',
   subject: 'Sending Email using Node.js with Wdio',
   html: '<h1>Appium-wdio test report</h1><p>Sending the report via email</p>',
   attachments: [{

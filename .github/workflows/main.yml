@@ -1,6 +1,9 @@
 name: GitHub CI WDIO-Appium Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [pull_request]
+on [pull_request :
+types:
+-closed]
+
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -65,6 +68,8 @@ jobs:
                 PERSONAL_TOKEN: ${{ secrets.TOKEN }}
                 PUBLISH_BRANCH: gh-pages
                 PUBLISH_DIR: wdio-appium/allure-history
+                
+                
                 
        
                 

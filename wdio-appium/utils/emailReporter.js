@@ -2,11 +2,11 @@ class EmailReporter {
 
     async emailReport() {
 
-        let username = 'vy493046@gmail.com'
-        let toList = 'parvkhanna10@gmail.com'
+        let username = 'xyz@gmail.com'
+        let toList = 'pxyz@gmail.com'
         const password = 'usqyhodhipbepxby'
         var nodemailer = require('nodemailer')
-        const filesData = [{ name: 'TestScreenshot.png', path: './test-data/TestScreenshot.png', cid: 'report' },]
+        const filesData = [{ name: 'master-report.html', path: './reports/html-reports/master-report.html', cid: 'report' },]
         const attachments = filesData.map((file) => {
             return { filename: file.name, path: file.path, cid: file.cid };
         });

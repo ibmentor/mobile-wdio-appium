@@ -5,6 +5,11 @@ import slackReporter from '../wdio-appium/utils/util.slackRepoting';
 const allure = require('allure-commandline');
 import { deleteFolder } from '../wdio-appium/utils/function'
 import jira from './config/jira';
+import emailReporter from '../wdio-appium/utils/emailReporter'
+import jiraReporter from './utils/jiraReporter';
+import jira from './config/jira';
+import { ReportAggregator, HtmlReporter } from 'wdio-html-nice-reporter';
+let reportAggregator;
 
 
 exports.config = {
@@ -52,47 +57,47 @@ exports.config = {
     maxInstances: 2,
 
     capabilities: [
-//     { "appium:systemPort": "8203",
-//         platformName: "Android",
-//          "appium:deviceName": "Pixel 6 Pro API 33",
-// //         "appium:platformVersion": "11.0",
-//         "appium:automationName": "UIAutomator2",
-//         "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
-//         "appium:autoGrantPermissions": true,
-//         "appium:skipDeviceInitialization": true,
-//         "appium:ignoreHiddenApiPolicyError": true,
-//         "appium:uiautomator2ServerLaunchTimeout":"10000",
-//         "appium:uiautomator2ServerInstallTimeout":"10000"
-//     }, 
-    {
-    "appium:systemPort": "8203",
-    platformName: "Android",
-    "appium:udid":"emulator-5554", //for parallel execution device UUID is mandatory
-    "appium:platformVersion": "11.0",
-    "appium:automationName": "UIAutomator2",
-    "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
-    "appium:autoGrantPermissions": true,
-    "appium:skipDeviceInitialization": true,
-    "appium:ignoreHiddenApiPolicyError": true,
-    "appium:uiautomator2ServerLaunchTimeout":"10000",
-    "appium:uiautomator2ServerInstallTimeout":"10000"
-    
-}, 
-// {
-    
-//     "appium:systemPort": "8201",
-//      platformName: "Android",
-//     "appium:udid":"emulator-5556",
-//     "appium:platformVersion": "11.0",
-//     "appium:automationName": "UIAutomator2",
-//     "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
-//     "appium:autoGrantPermissions": true,
-//     "appium:skipDeviceInitialization": true,
-//     "appium:ignoreHiddenApiPolicyError": true,
-//     "appium:uiautomator2ServerLaunchTimeout":"10000",
-//     "appium:uiautomator2ServerInstallTimeout":"10000"
-// }
-],
+        //     { "appium:systemPort": "8203",
+        //         platformName: "Android",
+        //          "appium:deviceName": "Pixel 6 Pro API 33",
+        // //         "appium:platformVersion": "11.0",
+        //         "appium:automationName": "UIAutomator2",
+        //         "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
+        //         "appium:autoGrantPermissions": true,
+        //         "appium:skipDeviceInitialization": true,
+        //         "appium:ignoreHiddenApiPolicyError": true,
+        //         "appium:uiautomator2ServerLaunchTimeout":"10000",
+        //         "appium:uiautomator2ServerInstallTimeout":"10000"
+        //     }, 
+        {
+            "appium:systemPort": "8203",
+            platformName: "Android",
+            "appium:udid": "emulator-5554", //for parallel execution device UUID is mandatory
+            "appium:platformVersion": "11.0",
+            "appium:automationName": "UIAutomator2",
+            "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
+            "appium:autoGrantPermissions": true,
+            "appium:skipDeviceInitialization": true,
+            "appium:ignoreHiddenApiPolicyError": true,
+            "appium:uiautomator2ServerLaunchTimeout": "10000",
+            "appium:uiautomator2ServerInstallTimeout": "10000"
+
+        },
+        // {
+
+        //     "appium:systemPort": "8201",
+        //      platformName: "Android",
+        //     "appium:udid":"emulator-5556",
+        //     "appium:platformVersion": "11.0",
+        //     "appium:automationName": "UIAutomator2",
+        //     "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
+        //     "appium:autoGrantPermissions": true,
+        //     "appium:skipDeviceInitialization": true,
+        //     "appium:ignoreHiddenApiPolicyError": true,
+        //     "appium:uiautomator2ServerLaunchTimeout":"10000",
+        //     "appium:uiautomator2ServerInstallTimeout":"10000"
+        // }
+    ],
     //
     // If you have trouble getting all important capabilities together, check out the
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -186,40 +191,20 @@ exports.config = {
         outputFileFormat: function (opts) {
             return `results-${opts.cid}.${opts.capabilities}.json`
         }
+    }], ["html-nice", {
+        outputDir: './reports/html-reports/',
+        filename: 'report.html',
+        reportTitle: 'Test Report Title',
+        linkScreenshots: true,
+        //to show the report in a browser when done
+        showInBrowser: true,
+        collapseTests: false,
+        //to turn on screenshots after every test
+        useOnAfterCommandForScreenshot: false,
+        //to initialize the logger
+        // LOG: log4j.getLogger("default")
     }]
-        // [SlackReporter, {
-        //     slackOptions: {
-        //         type: 'web-api',
-        //         channel: 'C04EF4MFGR2',
-        //         slackBotToken: 'xoxb-4487656495106-4485962402949-HTKc5mgpv9hLHIsA19REaCM8',
-        //         // Set this option to true to attach a screenshot to the failed case.
-        //         uploadScreenshotOfFailedCase: true,
-        //         // Set this option to true if you want to add thread with details of results to notification of test results posted to Slack.
-        //         notifyDetailResultThread: true,
-        //         // Set the Filter for detail results. (array is empty or undefined, all filters are applied.)
-        //         filterForDetailResults: [
-        //             'passed',
-        //             'failed',
-        //             'pending',
-        //             'skipped'
-        //         ],
-        // },
-        // // Set the Title of Test.
-        // title: 'Slack Reporter Test',
-        // // Set the notification of Test Finished
-        // notifyTestFinishMessage: true,
-        // // Customize Slack Emoji Symbols.
-        // emojiSymbols: {
-        //     passed: ':white_check_mark:',
-        //     failed: ':x:',
-        //     skipped: ':double_vertical_bar:',
-        //     pending: ':grey_question:',
-        //     start: ':rocket:',
-        //     finished: ':checkered_flag:',
-        //     watch: ':stopwatch:'
-        // },
-        // // Override the createStartPayload function.
-        // }]
+
     ],
 
     mochaOpts: {
@@ -245,10 +230,17 @@ exports.config = {
      * @param {Object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities detailst
      * 
-
      */
-    // onPrepare: function (config, capabilities) {
-    // },
+    onPrepare: function (config, capabilities) {
+        reportAggregator = new ReportAggregator({
+            outputDir: './reports/html-reports/',
+            filename: 'master-report.html',
+            reportTitle: 'Master Report',
+            browserName: capabilities.browserName,
+            collapseTests: true
+        });
+        reportAggregator.clean();
+    },
     /**
      * Gets executed before a worker process is spawned and can be used to initialise specific service
      * for that worker as well as modify runtime environments in an async fashion.
@@ -330,7 +322,7 @@ exports.config = {
      */
     afterTest: async function (test, context, { error, result, duration, passed, retries }) {
         if (!passed) {
-            await jira.raiseIssue()
+            // await jira.raiseIssue()
             await driver.takeScreenshot();
 
         }
@@ -424,6 +416,9 @@ exports.config = {
         const postMsg = `Number of Tests: ${totalTests}\nPassed: ${passedTests}; Failed: ${failedTests};`;
         console.log("#####################" + postMsg)
         await slackReporter.sendPreMessage(postMsg);
+        await reportAggregator.createReport();
+        await emailReporter.emailReport();
+        await jiraReporter.createJiraTicket();
         // await deleteFolder();
     },
 

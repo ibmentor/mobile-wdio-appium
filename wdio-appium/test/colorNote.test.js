@@ -1,16 +1,22 @@
 import AddressPage from "../pages/addressPage";
 import { shoppinglistData } from "../test-data/data";
 import { readDataFromCsv } from '../utils/function';
-describe('To test the functionality of colorNote application', async function() {
+import emailReporter from '../utils/emailReporter'
+
+
+describe('To test the functionality of colorNote application', async function () {
+    //The below logic will rerun the failed test cases for one time after the execution is completed of all the test cases
     this.retries(1)
     beforeEach("To restore the app's homepage", async () => {
+        //Start an Android activity by providing package name and activity name
         await driver.startActivity("com.socialnmobile.dictapps.notepad.color.note", "com.socialnmobile.colornote.activity.Main")
-
     });
-    afterEach("To raise a bug in Jira", async() => {
-        // await jira.raiseIssue();
+
+    afterEach("To raise a bug in Jira", async () => {
+        // The below function will send the post build email with HTML report attached 
         await emailReporter.emailReport()
     });
+    
     it('To create a new note', async () => {
         await AddressPage.addNoteTxt.click();
         await AddressPage.textOption.click();

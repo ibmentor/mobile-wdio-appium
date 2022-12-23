@@ -27,21 +27,7 @@ describe('Test case for e2e flow', async function() {
         await AddressPage.menuOptions.click();
         await AddressPage.btnTheme.click();
         await AddressPage.themeBlack.click();
-        // var title = await driver.getTitle();
-        // console.log("******" + title);
 
-    })
-    it('', async () => {
-        // const result = await readDataFromExcel();
-        // let json = JSON.stringify(result);
-        // // console.log("******" + obj);
-        // // console.log("******" + typeof (obj));
-        const testData = await readDataFromCsv();
-        console.log(testData.heading);
-        console.log(testData.firstList);
-        console.log(testData.secondList);
-        await driver.pause(10000);
-        
     })
 
     it.skip('To open the calender using scroll down action' , async () =>

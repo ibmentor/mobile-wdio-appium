@@ -34,6 +34,8 @@ exports.config = {
     // will be called from there.
     //
     // Patterns to exclude.
+
+    //You can specify all the test files you want to run
     specs: [
         "./test/*.js",
     ],
@@ -182,6 +184,7 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
+    //** We are using Spec reporter, Allure reporter, Json reporter and Html reporter  */
     reporters: ['spec', ['allure', {
         outputDir: 'allure-results',
         disableWebdriverStepsReporting: true,
@@ -209,6 +212,7 @@ exports.config = {
 
     mochaOpts: {
         ui: 'bdd',
+        //below is the default time executor will wait before closing the exceution
         timeout: 60000
     },
 
@@ -232,6 +236,7 @@ exports.config = {
      * 
      */
     onPrepare: function (config, capabilities) {
+        // From the below code we are generating the Html report
         reportAggregator = new ReportAggregator({
             outputDir: './reports/html-reports/',
             filename: 'master-report.html',
@@ -239,6 +244,7 @@ exports.config = {
             browserName: capabilities.browserName,
             collapseTests: true
         });
+        //From the below code we are cleaning the reports folder
         reportAggregator.clean();
     },
     /**
@@ -323,6 +329,7 @@ exports.config = {
     afterTest: async function (test, context, { error, result, duration, passed, retries }) {
         if (!passed) {
             // await jira.raiseIssue()
+            //It will take screenshot for all the failed test cases to attach them in diff reporters
             await driver.takeScreenshot();
 
         }
@@ -361,6 +368,7 @@ exports.config = {
      * @param {Array.<String>} specs List of spec file paths that ran
      */
     afterSession: async function (config, capabilities, specs) {
+        //Below expression will automatically generates the allure report
         // const reportError = new Error('Could not generate Allure report')
         // const generation = allure(['generate', 'allure-results', '--clean'])
         // return new Promise((resolve, reject) => {
@@ -389,6 +397,7 @@ exports.config = {
      * @param {<Object>} results object containing test results
      */
     onComplete: async function () {
+        //Below code will first read the data from JSON reporter file and then retrieve the values we want to pass in our Slack message
         const dir = path.join(process.cwd(), 'Results');
         let finalContent = { "state": {} };
         const read_directory = async dir =>
@@ -414,10 +423,13 @@ exports.config = {
         let failedTests = resultsData.state.failed
         let totalTests = passedTests + failedTests
         const postMsg = `Number of Tests: ${totalTests}\nPassed: ${passedTests}; Failed: ${failedTests};`;
-        console.log("#####################" + postMsg)
+        //Below function of Slack reporter class will send message to Slack channel
         await slackReporter.sendPreMessage(postMsg);
+        //Below function will create the html report
         await reportAggregator.createReport();
+        //Below function will send post build email with html report attached
         await emailReporter.emailReport();
+        //Below function will raise JIra ticket for non duplicate test cases
         await jiraReporter.createJiraTicket();
         // await deleteFolder();
     },

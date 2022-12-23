@@ -9,22 +9,11 @@ export default class basePage {
     * @param path path of the sub page (e.g. /path/to/page.html)
     */
     open(path) {
-        return browser.url(`${process.env.KART_URL}${path}`)
+        //Concatinating the url
+        return browser.url(`${'Weburl'}${'remaining url'}`)
     }
-            //
-
-    openByjusPayPage(){
-        return browser.url(`${process.env.PAYMENTS_URL}`)
-    }
+    //
     goToUrl(urlText) {
         return browser.url(urlText)
-    }
-    async openOmsUrl(count,ssoId) {
-        if (count < 1) {
-            return browser.url(`${process.env.OMS_BYJUS_URL}`)
-        }
-        else if (count >= 2) {
-            return browser.url(`${process.env.OMS_BYJUS_URL}${"orders/product-sales-sub-orders/"}${ssoId}`)
-        }
     }
 }

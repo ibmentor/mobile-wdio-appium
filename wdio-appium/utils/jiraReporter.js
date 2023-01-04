@@ -7,16 +7,17 @@ class JiraReporter {
             protocol: 'https',
             host: 'appium-wdio.atlassian.net/',
             username: 'parv.khanna@infobeans.com',
-            password: 'DJRfPCgvBxIbwSCRTCk3423D',
+            password: 'iOzJ9v44mbfCXgALmbvX6512',
             apiVersion: '2',
             strictSSL: true
         });
         var fs = require('fs');
-        fs.readFile('./Results/results.json', 'utf8', async function (err, data) {
+        fs.readFile('./Results/results-0-0.[object Object].json', 'utf8', async function (err, data) {
             if (err) throw err; // we'll not consider error handling for now
             var jsonData = JSON.parse(data);
             //We will parse the JSON report file and will retrieve the test cases name 
-            let tests = jsonData.suites[0].tests
+            const tests = jsonData.suites[0].tests
+            console.log("%%%%%%%%%%" + tests);
             var finalResult = {};
             for (var i = 0; i < tests.length; i++) {
                 var obj = tests[i];
@@ -31,12 +32,12 @@ class JiraReporter {
                 }
             }
             Object.keys(finalResult).forEach(async function (key) {
-            // From the above expression we will get the non duplicate failed test case
+                // From the above expression we will get the non duplicate failed test case
 
                 var options = {
                     "fields": {
                         "project": {
-                            "key": "XYZ"  //We need to give only key name of the project 
+                            "key": "AWD"  //We need to give only key name of the project 
                         },
                         "summary": key,  //Test Case Name
                         "description": finalResult[key], //Error Message

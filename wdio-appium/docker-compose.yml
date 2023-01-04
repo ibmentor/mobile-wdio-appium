@@ -1,0 +1,48 @@
+# Note: It requires docker-compose 1.13.0
+#
+# Usage: docker-compose up -d
+version: "2.2"
+
+services:
+  # Selenium hub
+  selenium_hub:
+    image: selenium/hub:3.14.0-curium
+    ports:
+      - 4444:4444
+
+  appium_server:
+    image: appium/appium
+    depends_on:
+      - selenium_hub
+    network_mode: "service:selenium_hub"
+    privileged: true
+    volumes:
+      - ./:/root/tmp
+      - /dev/bus/usb:/dev/bus/usb
+      - ~/.android:/root/.android
+    environment:
+      - CONNECT_TO_GRID=true
+      - SELENIUM_HOST=selenium_hub
+      - RELAXED_SECURITY=true
+
+
+  samsung:
+    image: budtmo/docker-android-x86-9.0
+    privileged: true
+    scale: 1
+    depends_on:
+      - selenium_hub
+      - appium_server
+    ports:
+      - 6080:6080
+      - 4723:4723
+      - 5554:5554
+      - 5555:5555
+    volumes:
+      - ./:/root/appium/
+      - ./video-nexus_7.1.1:/tmp/video
+    environment:
+      - DEVICE=Samsung Galaxy S6
+      - CONNECT_TO_GRID=true
+      - APPIUM=true
+      - SELENIUM_HOST=selenium_hub

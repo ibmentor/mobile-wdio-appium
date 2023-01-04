@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npx wdio run ./wdio.conf.js --spec test.js && node index.js",
-    "test": "npx wdio run ./wdio.config.js",
+    "test": "npx wdio run ./wdio.config.js --spec test/colorNote.e2e.test.js" ,
     "docker": "npx wdio  config/wdio.docker.conf.js ",
     "allure": "allure generate allure-results --clean && allure open"
   },

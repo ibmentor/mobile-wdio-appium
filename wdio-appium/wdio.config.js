@@ -1,14 +1,11 @@
 const logging = process.env.DEBUG ? 'debug' : 'error';
 const path = require('path');
 const fs = require("fs")
-import slackReporter from '../wdio-appium/utils/util.slackRepoting';
+import slackReporter from '../appium/utils/util.slackRepoting';
 const allure = require('allure-commandline');
-import { deleteFolder } from '../wdio-appium/utils/function'
-import jira from './config/jira';
-import emailReporter from '../wdio-appium/utils/emailReporter'
-import jiraReporter from './utils/jiraReporter';
-import jira from './config/jira';
-import { ReportAggregator, HtmlReporter } from 'wdio-html-nice-reporter';
+import emailReporter from '../appium/utils/emailReporter';
+import jiraReporter from '../appium/utils/jiraReporter';
+const { ReportAggregator, HtmlReporter } = require('wdio-html-nice-reporter');
 let reportAggregator;
 
 
@@ -72,18 +69,26 @@ exports.config = {
         //         "appium:uiautomator2ServerInstallTimeout":"10000"
         //     }, 
         {
-            "appium:systemPort": "8203",
+
             platformName: "Android",
-            "appium:udid": "emulator-5554", //for parallel execution device UUID is mandatory
-            "appium:platformVersion": "11.0",
+            // "appium:deviceName": "samsung_galaxy_s6_9.0",
+            // // 'appium:platformVersion': "10.0",
+            // "appium:automationName": "UIAutomator2",
+            // "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
+            // "appium:autoGrantPermissions": true,
+            // "appium:skipDeviceInitialization": true,
+            // "appium:ignoreHiddenApiPolicyError": true,
+            "appium:deviceName": "emulator-5554",
             "appium:automationName": "UIAutomator2",
+            "appium:udid": "emulator-5554",
             "appium:app": path.join(process.cwd(), "./app-data/ColorNote+Notepad.apk"),
             "appium:autoGrantPermissions": true,
-            "appium:skipDeviceInitialization": true,
             "appium:ignoreHiddenApiPolicyError": true,
-            "appium:uiautomator2ServerLaunchTimeout": "10000",
-            "appium:uiautomator2ServerInstallTimeout": "10000"
-
+            "appium:skipDeviceInitialization": true,
+            "appium:uiautomator2ServerInstallTimeout": 850000,
+            "appium:uiautomator2ServerLaunchTimeout": 850000,
+            "appium:adbExecTimeout": 850000,
+            "appium:noReset": true
         },
         // {
 
@@ -147,13 +152,16 @@ exports.config = {
     //
     // Default request retries count
     connectionRetryCount: 3,
+    // hostname: 'localhost',
+    // port: 4444,
+    // path: "/wd/hub",
     //
     services: [
         ['appium', {
             args: {
                 address: 'localhost',
                 port: 4723,
-                basePath: '/',
+                basePath: '/wd/hub',
             },
             logPath: './'
         }]
@@ -397,7 +405,7 @@ exports.config = {
      * @param {<Object>} results object containing test results
      */
     onComplete: async function () {
-        //Below code will first read the data from JSON reporter file and then retrieve the values we want to pass in our Slack message
+        // Below code will first read the data from JSON reporter file and then retrieve the values we want to pass in our Slack message
         const dir = path.join(process.cwd(), 'Results');
         let finalContent = { "state": {} };
         const read_directory = async dir =>
@@ -423,11 +431,11 @@ exports.config = {
         let failedTests = resultsData.state.failed
         let totalTests = passedTests + failedTests
         const postMsg = `Number of Tests: ${totalTests}\nPassed: ${passedTests}; Failed: ${failedTests};`;
-        //Below function of Slack reporter class will send message to Slack channel
+        // Below function of Slack reporter class will send message to Slack channel
         await slackReporter.sendPreMessage(postMsg);
-        //Below function will create the html report
+        // Below function will create the html report
         await reportAggregator.createReport();
-        //Below function will send post build email with html report attached
+        // Below function will send post build email with html report attached
         await emailReporter.emailReport();
         //Below function will raise JIra ticket for non duplicate test cases
         await jiraReporter.createJiraTicket();
